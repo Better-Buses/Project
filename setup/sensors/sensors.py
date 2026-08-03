@@ -17,7 +17,7 @@ import paho.mqtt.client as mqtt
 
 BROKER_IP = sys.argv[1] if len(sys.argv) > 1 else "172.16.100.2"
 BROKER_PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 30183
-TOPIC = "sensors/sensor-1"
+TOPIC = "zone-1/sensor-1"
 INTERVAL = 2  # seconds between readings
 
 client = mqtt.Client()
