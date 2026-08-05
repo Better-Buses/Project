@@ -2,19 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mosquitto
-  namespace: default
+  labels:
+    app: mosquitto
+    zone: "${ZONE}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: mosquitto
+      zone: "${ZONE}"
   template:
     metadata:
       labels:
         app: mosquitto
+        zone: "${ZONE}"
     spec:
       nodeSelector:
-        node-role: fog
+        zone: "${ZONE}"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1883
@@ -37,27 +41,19 @@ spec:
             name: mosquitto-config
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mosquitto-config
-  namespace: default
-data:
-  mosquitto.conf: |
-    listener 1883
-    allow_anonymous true
-    persistence false
-    log_dest stdout
----
-apiVersion: v1
 kind: Service
 metadata:
   name: mosquitto
-  namespace: default
+  labels:
+    app: mosquitto
+    zone: "${ZONE}"
 spec:
   type: NodePort
+  externalTrafficPolicy: Local  # makes the node only serve traffic to pods running on itself
   selector:
     app: mosquitto
+    zone: "${ZONE}"
   ports:
     - port: 1883
       targetPort: 1883
-      nodePort: 30183
+      nodePort: ${NODE_PORT}

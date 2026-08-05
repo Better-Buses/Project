@@ -36,7 +36,3 @@ echo "127.0.1.1 worker-$1" | sudo tee -a /etc/hosts
 # Install k3s in agent mode and join the VM to the cluster
 
 curl -sfL https://get.k3s.io | K3S_URL=https://$2:6443 K3S_TOKEN=$3 sh -
-
-# TODO: run in master
-
-# kubectl label nodes <worker_node_name> node-role=fog --overwrite

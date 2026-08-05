@@ -2,19 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: telegraf
-  namespace: default
+  labels:
+    app: telegraf
+    zone: "${ZONE}"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: telegraf
+      zone: "${ZONE}"
   template:
     metadata:
       labels:
         app: telegraf
+        zone: "${ZONE}"
     spec:
       nodeSelector:
-        node-role: fog
+        zone: ${ZONE}
       containers:
         - name: telegraf
           image: telegraf:1.30
@@ -33,35 +37,36 @@ apiVersion: v1
 kind: Service
 metadata:
   name: telegraf-metrics
-  namespace: default
   labels:
     app: telegraf
+    zone: "${ZONE}"
     release: kube-prometheus-stack
 spec:
-  type: NodePort
   selector:
     app: telegraf
+    zone: "${ZONE}"
   ports:
     - name: metrics
       port: 9273
       targetPort: 9273
-      nodePort: 30273
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: telegraf-servicemonitor
-  namespace: default
   labels:
     release: kube-prometheus-stack
 spec:
   selector:
     matchLabels:
       app: telegraf
+      zone: "${ZONE}"
   namespaceSelector:
     matchNames:
-      - default
+      - zone-${ZONE}
   endpoints:
     - port: metrics
       interval: 10s
       path: /metrics
+
+# the Prometheus Operator only picks up ServiceMonitors from namespaces its own Prometheus CR is configured to watch (serviceMonitorNamespaceSelector). If your kube-prometheus-stack install is set to watch only its own namespace, your zone-* ServiceMonitors will be silently ignored no matter how correct they are. Worth a quick check with kubectl get prometheus -A -o yaml | grep -A5 serviceMonitorNamespaceSelector.
