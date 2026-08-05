@@ -1,10 +1,13 @@
 #!/bin/bash
+# Install OpenNebula, setup its dependencies and permissions, and generate SSH keys to connect to VMs without password.
+# TODO: The SSH public key must be copied to oneadmin settings.
 
 # OpenNebula installation
 
-USER="bbox"
+USER="bbus"
 
-sudo apt-get install -y augeas-tools apt-transport-https iptables-persistent netfilter-persistent unzip
+sudo apt update
+sudo apt install -y augeas-tools apt-transport-https iptables-persistent netfilter-persistent unzip
 wget 'https://github.com/OpenNebula/minione/releases/download/v7.0.1/minione'
 chmod +x minione
 sudo ./minione | tee $HOME/minione.log
@@ -17,4 +20,5 @@ newgrp oneadmin
 
 # SSH public key generation
 
-ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub

@@ -1,7 +1,5 @@
 #!/bin/bash
-# Firstly copy prometheus-ingress.yaml, then execute this script
-
-# Install services in server mode
+# Install K3s in server mode, Grafana, Prometheus and Falco
 
 set -e
 
@@ -24,14 +22,23 @@ echo ""
 echo ">>> Node toke:"
 sudo cat /var/lib/rancher/k3s/server/node-token
 
+echo "alias kctl='kubectl'" | sudo tee -a ~/.bashrc
+
 echo "========================================"
-echo " STEP 2 — Helm"
+echo " STEP 2 - Node rename"
+echo "========================================"
+
+sudo hostnamectl set-hostname master
+echo "127.0.1.1 master" | sudo tee -a /etc/hosts
+
+echo "========================================"
+echo " STEP 3 — Helm"
 echo "========================================"
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 
 echo "========================================"
-echo " STEP 3 — Nginx Ingress Controller"
+echo " STEP 4 — Nginx Ingress Controller"
 echo "========================================"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
@@ -48,7 +55,7 @@ kubectl wait --for=condition=Ready pods --all -n ingress-nginx --timeout=120s ||
 
 
 echo "========================================"
-echo " STEP 4 — Prometheus + Grafana"
+echo " STEP 5 — Prometheus + Grafana"
 echo "========================================"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -71,7 +78,7 @@ echo ">>> Grafana:    http://localhost:30000  (admin / prom-operator)"
 echo ">>> Prometheus: http://localhost:30001"
 
 echo "========================================"
-echo " STEP 5 — Basic auth per Ingress"
+echo " STEP 6 — Basic auth per Ingress"
 echo "========================================"
 sudo apt install -y apache2-utils
 
@@ -83,7 +90,7 @@ rm auth
 kubectl apply -f prometheus-ingress.yaml
 
 echo "========================================"
-echo " STEP 6 — Falco"
+echo " STEP 7 — Falco"
 echo "========================================"
 curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
   | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
@@ -100,3 +107,5 @@ sudo systemctl enable --now falco
 echo "========================================"
 echo " DONE"
 echo "========================================"
+
+sudo reboot
