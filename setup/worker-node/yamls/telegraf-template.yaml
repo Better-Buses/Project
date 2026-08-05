@@ -18,7 +18,7 @@ spec:
         zone: "${ZONE}"
     spec:
       nodeSelector:
-        zone: ${ZONE}
+        zone: "${ZONE}"
       containers:
         - name: telegraf
           image: telegraf:1.30
