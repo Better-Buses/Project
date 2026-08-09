@@ -21,7 +21,7 @@ class BusStopSensor:
         host_id = 3 + zone
         self.__broker_ip = "172.16.100." + str(host_id)
         self.__broker_port = 30183 + zone
-        self.__topic = f"zone-{zone}/stop-{sensor_id}"
+        self.__topic = f"zone-{zone}/stop/{sensor_id}"
 
         self.__client = mqtt.Client()
         self.__client.connect(self.__broker_ip, self.__broker_port, keepalive=60)

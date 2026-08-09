@@ -12,10 +12,13 @@ def time_to_seconds(t):
 
 schedule = {}
 with open(SCHEDULE_CSV, newline='') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        key = (int(row["zone"]), int(row["stop"]))
-        schedule[key] = time_to_seconds(row["expected_time"])
+    reader = csv.reader(f)
+    header = next(reader)
+    stop_ids = [int(x.strip()) for x in header]
+    for zone_idx, row in enumerate(reader, start=1):
+        for col_idx, time_str in enumerate(row):
+            stop_id = stop_ids[col_idx]
+            schedule[(zone_idx, stop_id)] = time_to_seconds(time_str)
 
 line_re = re.compile(r'^(\S+?),(\S+) (\S+)(?: (\d+))?$')
 
@@ -24,7 +27,7 @@ def parse_topic_tag(tags_str):
     return m.group(1) if m else None
 
 def zone_stop_from_topic(topic):
-    m = re.match(r'zone-(\d+)/stop-(\d+)', topic)
+    m = re.match(r'zone-(\d+)/stop/(\d+)', topic)
     return (int(m.group(1)), int(m.group(2))) if m else None
 
 for line in sys.stdin:
