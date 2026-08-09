@@ -28,8 +28,8 @@ echo "========================================"
 echo " STEP 2 - Node rename"
 echo "========================================"
 
-sudo hostnamectl set-hostname master
-echo "127.0.1.1 master" | sudo tee -a /etc/hosts
+# sudo hostnamectl set-hostname master
+# echo "127.0.1.1 master" | sudo tee -a /etc/hosts
 
 echo "========================================"
 echo " STEP 3 — Helm"
@@ -108,4 +108,4 @@ echo "========================================"
 echo " DONE"
 echo "========================================"
 
-sudo reboot
+# sudo reboot

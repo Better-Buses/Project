@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import time
 import threading
 import paho.mqtt.client as mqtt
@@ -34,9 +35,6 @@ class BusSensor:
 
     def stop(self):
         self.__stop_event.set()
-
-    def f():
-        return 1.0, 5.0
 
     def __interpolate_route(self, stops: list[BusStopSensor], steps: int = 5):
         if len(stops) < 2:

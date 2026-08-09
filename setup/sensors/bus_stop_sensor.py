@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 import random
+import time
 import paho.mqtt.client as mqtt
 
 class BusStopSensor:
-    def __init__(self, x: float, y: float, zone: int, sensor_id: int,expected_time: str):
+    def __init__(self, x: float, y: float, zone: int, sensor_id: int, expected_time: str):
         self.x = x
         self.y = y
         self.__zone = zone
         self.__sensor_id = sensor_id
-	self.__expected_time = expected_time
+        self.__expected_time = expected_time
 
         # Assume
         # x.x.x.2 -> Master
@@ -39,7 +40,7 @@ class BusStopSensor:
 
             self.__client.publish(self.__topic, actual_time)
 
-            print(f"Sensor {self.__sensor_id} in zone {self.__zone} sent: {value}")
+            print(f"Sensor {self.__sensor_id} in zone {self.__zone} sent: {actual_time}")
         except KeyboardInterrupt:
             print("Stopping")
             self.__client.loop_stop()

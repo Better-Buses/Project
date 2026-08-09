@@ -9,13 +9,16 @@ WORKDIR=$(mktemp -d)
 
 # Render templates
 envsubst < configs/telegraf-template.conf > "$WORKDIR/telegraf.conf"
-envsubst < yamls/telegraf-template.yaml > "$WORKDIR/telegraf.yaml"
+envsubst < yamls/telegraf-workload-template.yaml > "$WORKDIR/telegraf-workload.yaml"
+envsubst < yamls/telegraf-monitor-template.yaml > "$WORKDIR/telegraf-monitor.yaml"
 
 kubectl create configmap "telegraf-config" \
   --from-file="telegraf.conf=$WORKDIR/telegraf.conf" \
   --namespace="$NAMESPACE" \
   --dry-run=client -o yaml | kubectl apply -f -
 
-kubectl apply -f "$WORKDIR/telegraf.yaml" --namespace="$NAMESPACE"
+kubectl apply -f "$WORKDIR/telegraf-workload.yaml" --namespace="$NAMESPACE"
+
+kubectl apply -f "$WORKDIR/telegraf-monitor.yaml" --namespace="monitoring"
 
 kubectl rollout restart deployment telegraf --namespace="$NAMESPACE"

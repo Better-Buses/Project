@@ -59,25 +59,3 @@ spec:
     - name: metrics
       port: 9273
       targetPort: 9273
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: telegraf-servicemonitor-zone-${ZONE}
-  namespace: monitoring
-  labels:
-    release: kube-prometheus-stack
-spec:
-  selector:
-    matchLabels:
-      app: telegraf
-      zone: "${ZONE}"
-  namespaceSelector:
-    matchNames:
-      - zone-${ZONE}
-  endpoints:
-    - port: metrics
-      interval: 10s
-      path: /metrics
-
-# the Prometheus Operator only picks up ServiceMonitors from namespaces its own Prometheus CR is configured to watch (serviceMonitorNamespaceSelector). If your kube-prometheus-stack install is set to watch only its own namespace, your zone-* ServiceMonitors will be silently ignored no matter how correct they are. Worth a quick check with kubectl get prometheus -A -o yaml | grep -A5 serviceMonitorNamespaceSelector.
