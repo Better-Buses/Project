@@ -59,3 +59,5 @@ spec:
     - name: metrics
       port: 9273
       targetPort: 9273
+
+# the Prometheus Operator only picks up ServiceMonitors from namespaces its own Prometheus CR is configured to watch (serviceMonitorNamespaceSelector). If your kube-prometheus-stack install is set to watch only its own namespace, your zone-* ServiceMonitors will be silently ignored no matter how correct they are. Worth a quick check with kubectl get prometheus -A -o yaml | grep -A5 serviceMonitorNamespaceSelector.

@@ -15,5 +15,5 @@ spec:
       - zone-${ZONE}
   endpoints:
     - port: metrics
-      interval: 10s
+      interval: 3s
       path: /metrics
