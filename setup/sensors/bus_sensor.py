@@ -67,7 +67,7 @@ class BusSensor:
                     self.__stops[int(i / steps_per_route)].send_bus_arrival_time()
 
                 pos = path[i]
-                self.__client.publish(self.__topic, str(pos))
+                self.__client.publish(self.__topic, json.dumps({"x": pos[0], "y": pos[1]}))
 
                 print(f"Bus {self.__zone} sent: {pos}")
                 

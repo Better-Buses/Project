@@ -22,16 +22,26 @@ spec:
       containers:
         - name: telegraf
           image: telegraf:1.30
+          command: ["sh", "-c", "apt-get update && apt-get install -y python3 && exec telegraf"]
+          env:
+            - name: ZONE
+              value: "${ZONE}"
           ports:
             - containerPort: 9273
           volumeMounts:
             - name: config
               mountPath: /etc/telegraf/telegraf.conf
               subPath: telegraf.conf
+            - name: worker-data
+              mountPath: /data
       volumes:
         - name: config
           configMap:
             name: telegraf-config
+        - name: worker-data
+          hostPath:
+            path: /home/worker/data
+            type: Directory
 ---
 apiVersion: v1
 kind: Service

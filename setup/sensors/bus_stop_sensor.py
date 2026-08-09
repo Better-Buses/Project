@@ -4,11 +4,12 @@ import random
 import paho.mqtt.client as mqtt
 
 class BusStopSensor:
-    def __init__(self, x: float, y: float, zone: int, sensor_id: int):
+    def __init__(self, x: float, y: float, zone: int, sensor_id: int,expected_time: str):
         self.x = x
         self.y = y
         self.__zone = zone
         self.__sensor_id = sensor_id
+	self.__expected_time = expected_time
 
         # Assume
         # x.x.x.2 -> Master
@@ -29,8 +30,14 @@ class BusStopSensor:
 
     def send_bus_arrival_time(self):
         try:
-            value = round(random.uniform(-5, 5))  # Simulate schedule offset
-            self.__client.publish(self.__topic, str(value))
+            offset = round(random.uniform(-5, 5))  # Simulate schedule offset
+
+            h, m, s = map(int, self.__expected_time.split(":"))
+            expected_seconds = h * 3600 + m * 60 + s
+            actual_seconds = (expected_seconds + offset * 60) % 86400
+            actual_time = time.strftime("%H:%M:%S", time.gmtime(actual_seconds))
+
+            self.__client.publish(self.__topic, actual_time)
 
             print(f"Sensor {self.__sensor_id} in zone {self.__zone} sent: {value}")
         except KeyboardInterrupt:

@@ -4,7 +4,7 @@ set -euo pipefail
 chmod +x deploy-mosquitto.sh
 chmod +x deploy-telegraf.sh
 
-ZONES=1
+ZONES=2
 for (( ZONE=1; ZONE <= $ZONES; ++ZONE )) do
   kubectl label nodes worker-$ZONE zone=$ZONE --overwrite
 
