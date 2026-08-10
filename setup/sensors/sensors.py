@@ -9,14 +9,14 @@ from bus_sensor import BusSensor
 bus_stops_dict: dict[int, list[BusStopSensor]] = defaultdict(list)
 schedule_dict: dict[int, list[str]] = defaultdict(list)
 
-with open('setup/sensors/schedule.csv', newline='') as csvfile:
+with open('csv/schedule.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         zone = reader.line_num - 1
         for stop_col, expected_time in row.items():
             schedule_dict[zone].append(expected_time.strip())
 
-with open('setup/sensors/bus-stops.csv', newline='') as csvfile:
+with open('csv/bus-stops.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
 
     for row in reader:

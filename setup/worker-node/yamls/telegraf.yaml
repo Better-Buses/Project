@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf
+  labels:
+    app: telegraf
+    zone: "${ZONE}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegraf
+      zone: "${ZONE}"
+  template:
+    metadata:
+      labels:
+        app: telegraf
+        zone: "${ZONE}"
+    spec:
+      nodeSelector:
+        zone: "${ZONE}"
+      containers:
+        - name: telegraf
+          image: jayyy12/telegraf-python3:1.30
+          env:
+            - name: ZONE
+              value: "${ZONE}"
+          ports:
+            - containerPort: 9273
+          volumeMounts:
+            - name: config
+              mountPath: /etc/telegraf/telegraf.conf
+              subPath: telegraf.conf
+            - name: worker-data
+              mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+            name: telegraf-config
+        - name: worker-data
+          hostPath:
+            path: /home/worker/data
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegraf-metrics
+  labels:
+    app: telegraf
+    zone: "${ZONE}"
+    release: kube-prometheus-stack
+spec:
+  selector:
+    app: telegraf
+    zone: "${ZONE}"
+  ports:
+    - name: metrics
+      port: 9273
+      targetPort: 9273
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: telegraf-servicemonitor-zone-${ZONE}
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: telegraf
+      zone: "${ZONE}"
+  namespaceSelector:
+    matchNames:
+      - zone-${ZONE}
+  endpoints:
+    - port: metrics
+      interval: 3s
+      path: /metrics

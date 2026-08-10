@@ -51,14 +51,13 @@ for line in sys.stdin:
         print(line, flush=True)
         continue
 
-    # value arriva come stringa HH:MM:SS -> Telegraf con data_format="string" lo mette tra virgolette
     fm = re.match(r'value="?(\d{2}:\d{2}:\d{2})"?', fields_str)
     if not fm:
         print(line, flush=True)
         continue
 
     actual_seconds = time_to_seconds(fm.group(1))
-    diff = actual_seconds - schedule[zs]
+    diff = (actual_seconds - schedule[zs])/60 # in minutes
 
     new_line = f"{measurement},{tags_str} value={diff}"
     if ts:
