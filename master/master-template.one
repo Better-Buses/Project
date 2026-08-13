@@ -1,4 +1,4 @@
-NAME = "Ubuntu Minimal 24.04 - OurMaster"
+NAME = "Ubuntu Minimal 24.04 - Master"
 
 HYPERVISOR = "kvm"
 LOGO = "images/logos/ubuntu.png"
