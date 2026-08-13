@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-TEMPLATE_FILE="worker-template.one"
-VM_NAME="Worker"
+TEMPLATE_FILE="sensors-template.one"
+VM_NAME="Sensors"
 
 sudo cp "$TEMPLATE_FILE" "/tmp/$TEMPLATE_FILE"
 sudo chmod 644 "/tmp/$TEMPLATE_FILE"
