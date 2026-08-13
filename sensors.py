@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# Assume the following structure in order to dynamically assign brokers' IPs and ports
+# x.x.x.2 -> Master
+# x.x.x.3 -> Sensors VM
+# x.x.x.4 -> Worker-1
+# x.x.x.5 -> Worker-2
+# ...
 
 import csv
 import time
