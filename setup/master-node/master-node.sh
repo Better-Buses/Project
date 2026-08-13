@@ -3,6 +3,8 @@
 
 set -e
 
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 echo "Provisioning in progress — do not interrupt." > /etc/nologin
 
 echo "========================================"
