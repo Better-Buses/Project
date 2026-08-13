@@ -3,6 +3,8 @@
 
 set -e
 
+echo "Provisioning in progress — do not interrupt." > /etc/nologin
+
 echo "========================================"
 echo " STEP 1 — K3s (master)"
 echo "========================================"
@@ -100,17 +102,6 @@ kubectl apply -f prometheus-ingress.yaml
 echo "========================================"
 echo " STEP 7 — Falco"
 echo "========================================"
-# curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
-#   | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
- 
-# echo "deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] \
-# https://download.falco.org/packages/deb stable main" \
-#   | sudo tee /etc/apt/sources.list.d/falcosecurity.list
- 
-# sudo apt update
-# sudo apt install -y falco
- 
-# sudo systemctl enable --now falco
 curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
   | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
  
@@ -130,5 +121,8 @@ sudo systemctl status falco-modern-bpf --no-pager
 echo "========================================"
 echo " DONE"
 echo "========================================"
+
+rm -f /etc/nologin
+echo "Provisioning complete." > /root/.provisioning-complete
 
 # sudo reboot
