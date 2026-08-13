@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 TEMPLATE_FILE="sensors-template.one"
 VM_NAME="Sensors"
 

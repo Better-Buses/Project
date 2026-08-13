@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 ZONES="${1:?Usage: $0 <zones>}"
 TEMPLATE_FILE="worker-template.one"
 
