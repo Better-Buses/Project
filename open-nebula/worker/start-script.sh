@@ -26,5 +26,4 @@ mkdir -p /root/project
 cd /root/project
 git clone https://github.com/Better-Buses/Project.git . || echo "CLONE FAILED: $?"
 cd project
-git checkout master-node
-setsid nohup bash /root/project/cluster-setup/master/setup.sh > /var/log/provision.log 2>&1 < /dev/null &
+git checkout worker-node

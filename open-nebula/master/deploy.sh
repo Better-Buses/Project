@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-TEMPLATE_FILE="vm-template.one"
+TEMPLATE_FILE="master-template.one"
 VM_NAME="Master"
 SG_NAME="Master-SG"
 
