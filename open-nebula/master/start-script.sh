@@ -29,4 +29,4 @@ cd /root/project
 git clone https://github.com/Better-Buses/Project.git . || echo "CLONE FAILED: $?"
 cd project
 git checkout master-node
-setsid nohup bash /root/project/cluster-setup/master/setup.sh > /var/log/provision.log 2>&1 < /dev/null &
+setsid nohup bash /root/project/master/setup.sh > /var/log/provision.log 2>&1 < /dev/null &
