@@ -14,6 +14,14 @@ sudo chown $USER:$USER ~/.kube/config
 sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 chmod 600 ~/.kube/config
 
+export KUBECONFIG=~/.kube/config
+
+echo ""
+echo ">>> Waiting for k3s API server to respond..."
+until kubectl get nodes &>/dev/null; do
+  sleep 2
+done
+
 echo ""
 echo ">>> Nodes state K3s:"
 kubectl get nodes
