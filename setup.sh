@@ -27,7 +27,7 @@ SSH_PUB_KEY=$(cat ~/.ssh/id_ed25519.pub)
 echo "SSH_PUBLIC_KEY=\"$SSH_PUB_KEY\"" | sudo -iu oneadmin oneuser update oneadmin -a
 
 # Remove Alpine VM template and import Ubuntu Minimal 24.04 image
-sudo -iu oneadmin onetemplate list | awk 'NR>1 {print $1}' | xargs -r onetemplate delete
+sudo -iu oneadmin onetemplate delete 0
 
 UBUNT_IMAGE_NAME="Ubuntu Minimal 24.04"
 APP_ID=$(sudo -iu oneadmin onemarketapp list | grep -i "$UBUNT_IMAGE_NAME" | head -n1 | awk '{print $1}')
