@@ -1,6 +1,9 @@
 #!/bin/bash
 # First argument: <zones>
 
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 ZONES="${1:?Usage: $0 <zones>}"
 USER="bbus"
 
@@ -14,8 +17,6 @@ sudo ./minione | tee $HOME/minione.log
 sudo usermod -aG libvirt,kvm,oneadmin $USER
 sudo setfacl -R -m u:oneadmin:rwx /home/$USER
 sudo usermod -a -G $USER oneadmin
-newgrp libvirt
-newgrp oneadmin
 
 # SSH public key generation
 ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
