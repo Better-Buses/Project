@@ -29,16 +29,21 @@ spec:
             - containerPort: 1883
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: ["ALL"]
           volumeMounts:
             - name: mosquitto-config
               mountPath: /mosquitto/config/mosquitto.conf
               subPath: mosquitto.conf
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: mosquitto-config
           configMap:
             name: mosquitto-config
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -49,7 +54,7 @@ metadata:
     zone: "${ZONE}"
 spec:
   type: NodePort
-  externalTrafficPolicy: Local  # makes the node only serve traffic to pods running on itself
+  externalTrafficPolicy: Local
   selector:
     app: mosquitto
     zone: "${ZONE}"

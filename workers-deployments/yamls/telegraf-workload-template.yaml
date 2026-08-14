@@ -19,29 +19,44 @@ spec:
     spec:
       nodeSelector:
         zone: "${ZONE}"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
       containers:
         - name: telegraf
-          image: telegraf:1.30
-          command: ["sh", "-c", "apt-get update && apt-get install -y python3 && exec telegraf"]
+          image: jayyy12/telegraf-python3-sec:1.30
           env:
             - name: ZONE
               value: "${ZONE}"
           ports:
             - containerPort: 9273
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
           volumeMounts:
             - name: config
               mountPath: /etc/telegraf/telegraf.conf
               subPath: telegraf.conf
-            - name: worker-data
-              mountPath: /data
+            - name: offset-script
+              mountPath: /data/offset_calc.py
+              subPath: offset_calc.py
+            - name: offset-script
+              mountPath: /data/schedule.csv
+              subPath: schedule.csv
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: config
           configMap:
             name: telegraf-config
-        - name: worker-data
-          hostPath:
-            path: /root/data
-            type: Directory
+        - name: offset-script
+          configMap:
+            name: offset-calc-script
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -59,5 +74,3 @@ spec:
     - name: metrics
       port: 9273
       targetPort: 9273
-
-# the Prometheus Operator only picks up ServiceMonitors from namespaces its own Prometheus CR is configured to watch (serviceMonitorNamespaceSelector). If your kube-prometheus-stack install is set to watch only its own namespace, your zone-* ServiceMonitors will be silently ignored no matter how correct they are. Worth a quick check with kubectl get prometheus -A -o yaml | grep -A5 serviceMonitorNamespaceSelector.

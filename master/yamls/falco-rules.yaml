@@ -1,0 +1,36 @@
+- rule: Shell spawned in fog container
+  desc: Detect if a shell is open in a container in the fog layer
+  condition: >
+    spawned_process and container and
+    proc.name in (shell_binaries) and
+    (container.image.repository contains "mosquitto" or
+     container.image.repository contains "fog")
+  output: >
+    Shell is open in (user=%user.name cmd=%proc.cmdline
+    container=%container.name image=%container.image.repository)
+  priority: CRITICAL
+  tags: [fog, security, shell]
+
+- rule: Unexpected outbound connection from fog
+  desc: A coniainer is trying to connect to an not authorized
+  condition: >
+    outbound and container and
+    not fd.snet in (10.42.0.0/16, 10.43.0.0/16) and
+    container.image.repository contains "mosquitto"
+  output: >
+    Suspicius connection from coniainer to %fd.sip:%fd.sport
+    (container=%container.name)
+  priority: WARNING
+  tags: [fog, network, security]
+
+- rule: Read sensitive file in container
+  desc: Unexpected read of file contents
+  condition: >
+    open_read and container and
+    fd.name in ("/etc/shadow", "/etc/passwd", "/root/.ssh") and
+    container.image.repository contains "mosquitto"
+  output: >
+    Unexpected read of file in container (file=%fd.name
+    container=%container.name user=%user.name)
+  priority: ERROR
+  tags: [fog, filesystem, security]

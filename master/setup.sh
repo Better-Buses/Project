@@ -2,7 +2,6 @@
 # Install K3s in server mode, Grafana, Prometheus and Falco
 
 set -e
-
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 echo "Provisioning in progress — do not interrupt." > /etc/nologin
@@ -104,21 +103,46 @@ kubectl apply -f prometheus-ingress.yaml
 echo "========================================"
 echo " STEP 7 — Falco"
 echo "========================================"
-curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
-  | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
+helm repo add falcosecurity https://falcosecurity.github.io/charts
+helm repo update
  
-echo "deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] \
-https://download.falco.org/packages/deb stable main" \
-  | sudo tee /etc/apt/sources.list.d/falcosecurity.list
+kubectl create namespace falco 2>/dev/null || true
  
-sudo apt update
-sudo apt install -y falco
- 
-sudo systemctl enable --now falco-modern-bpf
+helm install falco falcosecurity/falco \
+  --namespace falco \
+  --set driver.kind=modern_ebpf \
+  --set falcosidekick.enabled=true \
+  --set falcosidekick.config.prometheus.enabled=true \
+  --set falco.http_output.enabled=true \
+  --set falco.http_output.url=http://falco-falcosidekick:2801/ \
+  --set falco.json_output=true \
+  --set falco.json_include_output_property=true \
+  --set falcosidekick.securityContext.runAsNonRoot=true \
+  --set falcosidekick.securityContext.runAsUser=1000 \
+  --set falcosidekick.securityContext.readOnlyRootFilesystem=true \
+  --set falcosidekick.securityContext.allowPrivilegeEscalation=false \
+  --set falcosidekick.securityContext.capabilities.drop[0]=ALL \
+  --set-file customRules."falco-rules\.yaml"=yamls/falco-rules.yaml
 
 echo ""
-echo ">>> Falco status:"
-sudo systemctl status falco-modern-bpf --no-pager
+echo ">>> Waiting for falco..."
+kubectl wait --for=condition=Ready pods --all -n falco --timeout=180s || true
+
+# curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
+#   | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
+ 
+# echo "deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] \
+# https://download.falco.org/packages/deb stable main" \
+#   | sudo tee /etc/apt/sources.list.d/falcosecurity.list
+ 
+# sudo apt update
+# sudo apt install -y falco
+ 
+# sudo systemctl enable --now falco-modern-bpf
+
+# echo ""
+# echo ">>> Falco status:"
+# sudo systemctl status falco-modern-bpf --no-pager
 
 echo "========================================"
 echo " DONE"

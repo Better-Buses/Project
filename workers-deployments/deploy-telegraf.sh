@@ -9,7 +9,6 @@ WORKDIR=$(mktemp -d)
 
 # Render templates
 envsubst < configs/telegraf-template.conf > "$WORKDIR/telegraf.conf"
-#envsubst < yamls/telegraf.yaml > "$WORKDIR/telegraf.yaml"
 envsubst < yamls/telegraf-workload-template.yaml > "$WORKDIR/telegraf-workload.yaml"
 envsubst < yamls/telegraf-monitor-template.yaml > "$WORKDIR/telegraf-monitor.yaml"
 
@@ -18,10 +17,14 @@ kubectl create configmap "telegraf-config" \
   --namespace="$NAMESPACE" \
   --dry-run=client -o yaml | kubectl apply -f -
 
+kubectl create configmap offset-calc-script \
+  --from-file=offset_calc.py=data/offset_calc.py \
+  --from-file=schedule.csv=data/schedule.csv \
+  --namespace="$NAMESPACE" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 kubectl apply -f "$WORKDIR/telegraf-workload.yaml" --namespace="$NAMESPACE"
 
 kubectl apply -f "$WORKDIR/telegraf-monitor.yaml" --namespace="monitoring"
-
-#kubectl apply -f "$WORKDIR/telegraf.yaml" --namespace="$NAMESPACE"
 
 kubectl rollout restart deployment telegraf --namespace="$NAMESPACE"
