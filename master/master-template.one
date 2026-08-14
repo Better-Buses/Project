@@ -16,7 +16,7 @@ DISK = [
 
 NIC = [
   NETWORK = "vnet",
-  SECURITY_GROUPS = "100"
+  SECURITY_GROUPS = "${MASTER_SG_ID}"
 ]
 
 NIC_DEFAULT = [
