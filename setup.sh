@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 ZONES="${1:?Usage: $0 <zones>}"
-USER="bbus"
+HOST_USER="bbus"
 
 # OpenNebula installation
 sudo apt update
@@ -14,9 +14,9 @@ wget 'https://github.com/OpenNebula/minione/releases/download/v7.0.1/minione'
 chmod +x minione
 sudo ./minione | tee $HOME/minione.log
 
-sudo usermod -aG libvirt,kvm,oneadmin $USER
-sudo setfacl -R -m u:oneadmin:rwx /home/$USER
-sudo usermod -a -G $USER oneadmin
+sudo usermod -aG libvirt,kvm,oneadmin $HOST_USER
+sudo setfacl -R -m u:oneadmin:rwx /home/$HOST_USER
+sudo usermod -a -G $HOST_USER oneadmin
 
 # SSH public key generation
 ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
@@ -43,9 +43,11 @@ sudo -iu oneadmin onemarketapp export "$APP_ID" "$UBUNT_IMAGE_NAME" --datastore 
 while true; do
   STATE=$(sudo -iu oneadmin oneimage show "$UBUNT_IMAGE_NAME" 2>/dev/null | grep "^STATE" | awk '{print $3}')
   echo "  State: $STATE"
-  [ "$STATE" = "READY" ] && break
+  [ "$STATE" = "rdy" ] && break
   sleep 5
 done
+
+sudo -iu oneadmin onetemplate delete 1
 
 # Remove default Security Group from vnet
 cat > /tmp/vnet-update.txt << 'EOF'
