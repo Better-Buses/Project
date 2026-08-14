@@ -6,6 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 TEMPLATE_FILE="master-template.one"
 VM_NAME="Master"
+export START_SCRIPT_B64=$(base64 -w0 start-script.sh)
 
 WORKDIR=$(mktemp -d)
 envsubst < $TEMPLATE_FILE > "$WORKDIR/$TEMPLATE_FILE"

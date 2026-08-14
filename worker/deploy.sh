@@ -6,8 +6,12 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 ZONES="${1:?Usage: $0 <zones>}"
 TEMPLATE_FILE="worker-template.one"
+export START_SCRIPT_B64=$(base64 -w0 start-script.sh)
 
-sudo cp "$TEMPLATE_FILE" "/tmp/$TEMPLATE_FILE"
+WORKDIR=$(mktemp -d)
+envsubst < $TEMPLATE_FILE > "$WORKDIR/$TEMPLATE_FILE"
+
+sudo cp "$WORKDIR/$TEMPLATE_FILE" "/tmp/$TEMPLATE_FILE"
 sudo chmod 644 "/tmp/$TEMPLATE_FILE"
 
 TEMPLATE_ID=$(sudo -iu oneadmin onetemplate create "/tmp/$TEMPLATE_FILE" | grep -oP 'ID:\s*\K[0-9]+')

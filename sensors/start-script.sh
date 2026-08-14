@@ -30,3 +30,6 @@ cd /root/project
 git clone https://github.com/Better-Buses/Project.git . || echo "CLONE FAILED: $?"
 cd project
 git checkout sensors
+cd ..
+mv /root/project/* /root/ 2>/dev/null
+rmdir /root/project
