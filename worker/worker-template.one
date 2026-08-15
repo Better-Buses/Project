@@ -9,6 +9,10 @@ CPU = "1"
 VCPU = "2"
 MEMORY = "4096"
 
+CPU_MODEL = [
+  MODEL = "host-passthrough"
+]
+
 DISK = [
   IMAGE_ID = "1",
   SIZE = "15360"
