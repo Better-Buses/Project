@@ -1,5 +1,4 @@
 #!/bin/bash
-# Install K3s in server mode, Grafana, Prometheus and Falco
 
 set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -9,6 +8,9 @@ echo "Provisioning in progress — do not interrupt." > /etc/nologin
 echo "========================================"
 echo " STEP 1 — K3s (master)"
 echo "========================================"
+sudo hostnamectl set-hostname master
+echo "127.0.1.1 master" | sudo tee -a /etc/hosts
+
 curl -sfL https://get.k3s.io | sh -
 
 mkdir -p ~/.kube
@@ -157,7 +159,4 @@ echo "========================================"
 rm -f /etc/nologin
 echo "Provisioning complete." > /root/.provisioning-complete
 
-# sudo hostnamectl set-hostname master
-# echo "127.0.1.1 master" | sudo tee -a /etc/hosts
-
-# sudo reboot
+sudo reboot
