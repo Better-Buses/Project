@@ -98,7 +98,7 @@ kubectl create secret generic prometheus-basic-auth \
   --from-file=auth \
   -n monitoring
 rm auth
-kubectl apply -f prometheus-ingress.yaml
+kubectl apply -f yamls/prometheus-ingress.yaml
 
 echo "========================================"
 echo " STEP 7 — Falco"
