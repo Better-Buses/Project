@@ -10,7 +10,7 @@ VCPU = "1"
 MEMORY = "4096"
 
 CPU_MODEL = [
-  MODEL = "host-model"
+  MODEL = "host-passthrough"
 ]
 
 DISK = [
