@@ -94,13 +94,6 @@ RULE = [PROTOCOL = "ICMP", RULE_TYPE = "inbound", IP = "172.16.100.2", SIZE = "1
 RULE = [PROTOCOL = "ALL", RULE_TYPE = "outbound"]
 EOF
 
-# Assign Security Groups IDs to the VMs templates
-# MASTER_SG_ID=$(sudo -iu oneadmin onesecgroup create /tmp/master-sg.txt | grep -oP 'ID:\s*\K[0-9]+')
-# WORKER_SG_ID=$(sudo -iu oneadmin onesecgroup create /tmp/worker-sg.txt | grep -oP 'ID:\s*\K[0-9]+')
-
-# export MASTER_SG_ID
-# export WORKER_SG_ID
-
 rm /tmp/master-sg.txt /tmp/worker-sg.txt
 
 # Create VMs

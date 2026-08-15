@@ -31,5 +31,5 @@ cd project
 git checkout master-node
 cd ..
 mv /root/project/* /root/ 2>/dev/null
-rmdir /root/project
+rm -r /root/project
 setsid nohup bash /root/master/setup.sh > /var/log/provision.log 2>&1 < /dev/null &

@@ -32,4 +32,4 @@ cd project
 git checkout sensors
 cd ..
 mv /root/project/* /root/ 2>/dev/null
-rmdir /root/project
+rm -r /root/project

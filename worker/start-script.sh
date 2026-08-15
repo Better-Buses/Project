@@ -31,4 +31,4 @@ cd project
 git checkout worker-node
 cd ..
 mv /root/project/* /root/ 2>/dev/null
-rmdir /root/project
+rm -r /root/project
