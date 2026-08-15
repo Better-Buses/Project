@@ -16,6 +16,12 @@ wget 'https://github.com/OpenNebula/minione/releases/download/v7.0.1/minione'
 chmod +x minione
 sudo ./minione --yes | tee $HOME/minione.log
 
+echo ">>> Waiting for OpenNebula host to be monitored..."
+until sudo -iu oneadmin onehost show 0 | grep -q "STATE *: MONITORED"; do
+  sleep 5
+done
+echo ">>> Host is monitored."
+
 sudo usermod -aG libvirt,kvm,oneadmin $USER
 sudo setfacl -R -m u:oneadmin:rwx /home/$USER
 sudo usermod -a -G $USER oneadmin
