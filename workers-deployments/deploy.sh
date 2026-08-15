@@ -4,7 +4,9 @@ set -euo pipefail
 chmod +x deploy-mosquitto.sh
 chmod +x deploy-telegraf.sh
 
-ZONES=2
+NODE_COUNT=$(kubectl get nodes --no-headers | wc -l)
+ZONES=$((NODE_COUNT - 1))
+
 for (( ZONE=1; ZONE <= $ZONES; ++ZONE )) do
   kubectl label nodes worker-$ZONE zone=$ZONE --overwrite
 

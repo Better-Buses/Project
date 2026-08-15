@@ -36,20 +36,13 @@ sudo cat /var/lib/rancher/k3s/server/node-token
 echo "alias kctl='kubectl'" | sudo tee -a ~/.bashrc
 
 echo "========================================"
-echo " STEP 2 - Node rename"
-echo "========================================"
-
-# sudo hostnamectl set-hostname master
-# echo "127.0.1.1 master" | sudo tee -a /etc/hosts
-
-echo "========================================"
-echo " STEP 3 — Helm"
+echo " STEP 2 — Helm"
 echo "========================================"
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 
 echo "========================================"
-echo " STEP 4 — Nginx Ingress Controller"
+echo " STEP 3 — Nginx Ingress Controller"
 echo "========================================"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
@@ -66,7 +59,7 @@ kubectl wait --for=condition=Ready pods --all -n ingress-nginx --timeout=120s ||
 
 
 echo "========================================"
-echo " STEP 5 — Prometheus + Grafana"
+echo " STEP 4 — Prometheus + Grafana"
 echo "========================================"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -89,7 +82,7 @@ echo ">>> Grafana:    http://localhost:30000  (admin / prom-operator)"
 echo ">>> Prometheus: http://localhost:30001"
 
 echo "========================================"
-echo " STEP 6 — Basic auth per Ingress"
+echo " STEP 5 — Basic auth per Ingress"
 echo "========================================"
 sudo apt install -y apache2-utils
 
@@ -101,7 +94,7 @@ rm auth
 kubectl apply -f yamls/prometheus-ingress.yaml
 
 echo "========================================"
-echo " STEP 7 — Falco"
+echo " STEP 6 — Falco"
 echo "========================================"
 helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
@@ -128,27 +121,14 @@ echo ""
 echo ">>> Waiting for falco..."
 kubectl wait --for=condition=Ready pods --all -n falco --timeout=180s || true
 
-# curl -fsSL https://falco.org/repo/falcosecurity-packages.asc \
-#   | sudo gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg
- 
-# echo "deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] \
-# https://download.falco.org/packages/deb stable main" \
-#   | sudo tee /etc/apt/sources.list.d/falcosecurity.list
- 
-# sudo apt update
-# sudo apt install -y falco
- 
-# sudo systemctl enable --now falco-modern-bpf
-
-# echo ""
-# echo ">>> Falco status:"
-# sudo systemctl status falco-modern-bpf --no-pager
-
 echo "========================================"
 echo " DONE"
 echo "========================================"
 
 rm -f /etc/nologin
 echo "Provisioning complete." > /root/.provisioning-complete
+
+# sudo hostnamectl set-hostname master
+# echo "127.0.1.1 master" | sudo tee -a /etc/hosts
 
 # sudo reboot
