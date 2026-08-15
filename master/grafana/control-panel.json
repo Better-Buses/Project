@@ -570,9 +570,9 @@
     "tags": [],
     "timeSettings": {
       "timezone": "browser",
-      "from": "now-30m",
+      "from": "now-5m",
       "to": "now",
-      "autoRefresh": "",
+      "autoRefresh": "5s",
       "autoRefreshIntervals": [
         "5s",
         "10s",
@@ -588,7 +588,7 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Better_Busses",
+    "title": "Control Panel",
     "variables": [
       {
         "kind": "QueryVariable",
@@ -630,12 +630,12 @@
           "name": "offset_window",
           "query": "1m,5m,1h,6h,1d,7d,30d",
           "current": {
-            "text": "1m",
-            "value": "1m"
+            "text": "1h",
+            "value": "1h"
           },
           "options": [
             {
-              "selected": true,
+              "selected": false,
               "text": "1m",
               "value": "1m"
             },
@@ -645,7 +645,7 @@
               "value": "5m"
             },
             {
-              "selected": false,
+              "selected": true,
               "text": "1h",
               "value": "1h"
             },

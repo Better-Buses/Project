@@ -72,6 +72,10 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --set grafana.service.nodePort=30000 \
   --set grafana.adminPassword=foggy \
   --set prometheus.service.type=ClusterIP \
+  --set grafana.sidecar.dashboards.enabled=true \
+  --set grafana.sidecar.dashboards.label=grafana_dashboard \
+  --set grafana.sidecar.dashboards.folderAnnotation=grafana_folder \
+  --set grafana.sidecar.dashboards.provider.foldersFromFilesStructure=true
 
 echo ""
 echo ">>> Waiting for monitoring pods ..."
@@ -82,7 +86,32 @@ echo ">>> Grafana:    http://localhost:30000  (admin / prom-operator)"
 echo ">>> Prometheus: http://localhost:30001"
 
 echo "========================================"
-echo " STEP 5 — Basic auth per Ingress"
+echo " STEP 5 — Import Grafana dashboards"
+echo "========================================"
+
+DASHBOARD_DIR="grafana"
+FOLDER="Better Buses"
+
+for f in "$DASHBOARD_DIR"/*.json; do
+  base=$(basename "$f" .json)
+  cm_name="grafana-dashboard-${base}"
+
+  kubectl create configmap "$cm_name" \
+    --from-file="$f" \
+    --namespace monitoring \
+    --dry-run=client -o yaml \
+  | kubectl label --local -f - grafana_dashboard=1 -o yaml \
+  | kubectl apply -f -
+
+  kubectl annotate configmap "$cm_name" \
+    --namespace monitoring \
+    grafana_folder="$FOLDER" --overwrite
+done
+
+echo ">>> Dashboards imported into folder '$FOLDER'"
+
+echo "========================================"
+echo " STEP 6 — Basic auth per Ingress"
 echo "========================================"
 sudo apt install -y apache2-utils
 
@@ -94,7 +123,7 @@ rm auth
 kubectl apply -f yamls/prometheus-ingress.yaml
 
 echo "========================================"
-echo " STEP 6 — Falco"
+echo " STEP 7 — Falco"
 echo "========================================"
 helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update

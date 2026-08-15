@@ -402,7 +402,7 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "New dashboard",
+    "title": "Falco",
     "variables": [
       {
         "kind": "IntervalVariable",
