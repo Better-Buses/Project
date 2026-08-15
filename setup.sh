@@ -9,10 +9,12 @@ USER="bbus"
 
 # OpenNebula installation
 sudo apt update
-sudo apt install -y augeas-tools apt-transport-https iptables-persistent netfilter-persistent unzip
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+sudo DEBIAN_FRONTEND=noninteractive apt install -y augeas-tools apt-transport-https iptables-persistent netfilter-persistent unzip
 wget 'https://github.com/OpenNebula/minione/releases/download/v7.0.1/minione'
 chmod +x minione
-sudo ./minione | tee $HOME/minione.log
+sudo ./minione --yes | tee $HOME/minione.log
 
 sudo usermod -aG libvirt,kvm,oneadmin $USER
 sudo setfacl -R -m u:oneadmin:rwx /home/$USER
