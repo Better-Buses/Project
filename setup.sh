@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 ZONES="${1:?Usage: $0 <zones>}"
-HOST_USER="bbus"
+USER="bbus"
 
 # OpenNebula installation
 sudo apt update
@@ -14,9 +14,9 @@ wget 'https://github.com/OpenNebula/minione/releases/download/v7.0.1/minione'
 chmod +x minione
 sudo ./minione | tee $HOME/minione.log
 
-sudo usermod -aG libvirt,kvm,oneadmin $HOST_USER
-sudo setfacl -R -m u:oneadmin:rwx /home/$HOST_USER
-sudo usermod -a -G $HOST_USER oneadmin
+sudo usermod -aG libvirt,kvm,oneadmin $USER
+sudo setfacl -R -m u:oneadmin:rwx /home/$USER
+sudo usermod -a -G $USER oneadmin
 
 # SSH public key generation
 ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
@@ -95,11 +95,11 @@ RULE = [PROTOCOL = "ALL", RULE_TYPE = "outbound"]
 EOF
 
 # Assign Security Groups IDs to the VMs templates
-MASTER_SG_ID=$(sudo -iu oneadmin onesecgroup create /tmp/master-sg.txt | grep -oP 'ID:\s*\K[0-9]+')
-WORKER_SG_ID=$(sudo -iu oneadmin onesecgroup create /tmp/worker-sg.txt | grep -oP 'ID:\s*\K[0-9]+')
+# MASTER_SG_ID=$(sudo -iu oneadmin onesecgroup create /tmp/master-sg.txt | grep -oP 'ID:\s*\K[0-9]+')
+# WORKER_SG_ID=$(sudo -iu oneadmin onesecgroup create /tmp/worker-sg.txt | grep -oP 'ID:\s*\K[0-9]+')
 
-export MASTER_SG_ID
-export WORKER_SG_ID
+# export MASTER_SG_ID
+# export WORKER_SG_ID
 
 rm /tmp/master-sg.txt /tmp/worker-sg.txt
 

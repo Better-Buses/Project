@@ -10,7 +10,7 @@ VCPU = "1"
 MEMORY = "4096"
 
 CPU_MODEL = [
-  MODEL = "host-passthrough"
+  MODEL = "Nehalem"
 ]
 
 DISK = [
@@ -20,7 +20,7 @@ DISK = [
 
 NIC = [
   NETWORK = "vnet",
-  SECURITY_GROUPS = "${MASTER_SG_ID}"
+  SECURITY_GROUPS = "100"
 ]
 
 NIC_DEFAULT = [

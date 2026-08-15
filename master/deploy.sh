@@ -8,7 +8,7 @@ VM_NAME="Master"
 export START_SCRIPT_B64=$(base64 -w0 start-script.sh)
 
 WORKDIR=$(mktemp -d)
-envsubst < $TEMPLATE_FILE > "$WORKDIR/$TEMPLATE_FILE"
+envsubst '${START_SCRIPT_B64}' < $TEMPLATE_FILE > "$WORKDIR/$TEMPLATE_FILE"
 
 sudo cp "$WORKDIR/$TEMPLATE_FILE" "/tmp/$TEMPLATE_FILE"
 sudo chmod 644 "/tmp/$TEMPLATE_FILE"
