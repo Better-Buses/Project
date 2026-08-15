@@ -6,11 +6,11 @@ LXD_SECURITY_PRIVILEGED = "true"
 SCHED_REQUIREMENTS = "HYPERVISOR=kvm"
 
 CPU = "1"
-VCPU = "2"
+VCPU = "1"
 MEMORY = "4096"
 
 CPU_MODEL = [
-  MODEL = "host-passthrough"
+  MODEL = "host-model"
 ]
 
 DISK = [
