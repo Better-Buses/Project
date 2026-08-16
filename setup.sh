@@ -102,6 +102,9 @@ RULE = [PROTOCOL = "ICMP", RULE_TYPE = "inbound", IP = "172.16.100.2", SIZE = "1
 RULE = [PROTOCOL = "ALL", RULE_TYPE = "outbound"]
 EOF
 
+sudo -iu oneadmin onesecgroup create /tmp/master-sg.txt
+sudo -iu oneadmin onesecgroup create /tmp/worker-sg.txt
+
 rm /tmp/master-sg.txt /tmp/worker-sg.txt
 
 # Create VMs
