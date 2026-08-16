@@ -2,7 +2,9 @@
 
 A fog infrastructure in which GPS sensors are attached to buses, and other trackers are located in bus stops. When a bus arrives at a bus stop, the current time is sent to the workers (at the fog layer), which computes the metrics, such as delay. In addition, the position of the buses is sent too in order to keep track of traffic jams, but these data are not processed. Finally, Prometheus and Grafana are adopted to pull data from the workers and display them onto a dashboard. For scalability purpose, workers and sensors are divided into areas, useful in large metropolitan areas: each sensor is assigned to a zone `Z` and it sends data only to worker `worker-Z`. The targets of the application are public transport agencies.
 
-<!-- Schema -->
+<div align="center">
+  <img src="resources/arch.svg">
+</div>
 
 ## Requirements
 
@@ -42,7 +44,7 @@ The repository is structured in branches, each one that is used only from a spec
 
 The following 3 namespaces are defined, with the relative deployments.
 
-- **monitoring** : Prometheus
+- **monitoring** : Grafana and Prometheus
 
 - **zone-Z** : mosquitto and telegraf deployed in `Worker-Z`
 
