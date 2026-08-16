@@ -79,9 +79,9 @@ rm /tmp/vnet-update.txt
 # Create Security Groups
 cat > /tmp/master-sg.txt << EOF
 NAME = "Master-SG"
-RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "22", IP = "192.168.1.94", SIZE = "1"]
-RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "30000", IP = "192.168.1.94", SIZE = "1"]
-RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "30001", IP = "192.168.1.94", SIZE = "1"]
+RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "22", IP = "172.16.100.1", SIZE = "1"]
+RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "30000", IP = "172.16.100.1", SIZE = "1"]
+RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "30001", IP = "172.16.100.1", SIZE = "1"]
 RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "6443", IP = "172.16.100.4", SIZE = "47"]
 RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "10250", IP = "172.16.100.4", SIZE = "47"]
 RULE = [PROTOCOL = "UDP", RULE_TYPE = "inbound", RANGE = "8472", IP = "172.16.100.4", SIZE = "47"]
@@ -91,7 +91,7 @@ EOF
 
 cat > /tmp/worker-sg.txt << EOF
 NAME = "Worker-SG"
-RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "22", IP = "192.168.1.94", SIZE = "1"]
+RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "22", IP = "172.16.100.1", SIZE = "1"]
 RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "9273", IP = "172.16.100.2", SIZE = "1"]
 RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "9100", IP = "172.16.100.2", SIZE = "1"]
 RULE = [PROTOCOL = "TCP", RULE_TYPE = "inbound", RANGE = "6443", IP = "172.16.100.2", SIZE = "1"]
