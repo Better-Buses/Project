@@ -384,9 +384,9 @@
     "tags": [],
     "timeSettings": {
       "timezone": "browser",
-      "from": "now-30m",
+      "from": "now-5m",
       "to": "now",
-      "autoRefresh": "",
+      "autoRefresh": "5s",
       "autoRefreshIntervals": [
         "5s",
         "10s",
@@ -410,12 +410,12 @@
           "name": "rate_interval",
           "query": "1m,5m,10m,30m,1h",
           "current": {
-            "text": "1m",
-            "value": "1m"
+            "text": "1h",
+            "value": "1h"
           },
           "options": [
             {
-              "selected": true,
+              "selected": false,
               "text": "1m",
               "value": "1m"
             },
@@ -435,7 +435,7 @@
               "value": "30m"
             },
             {
-              "selected": false,
+              "selected": true,
               "text": "1h",
               "value": "1h"
             }
