@@ -91,26 +91,136 @@ echo "========================================"
 echo " STEP 5 — Import Grafana dashboards"
 echo "========================================"
 
-DASHBOARD_DIR="grafana"
-FOLDER="Better Buses"
+GRAFANA_URL="http://localhost:30000"
+GRAFANA_ADMIN_USER="admin"
+GRAFANA_ADMIN_PASS="foggy"
+ 
+GRULLO_PASSWORD="trento"
+BROLLO_PASSWORD="trento"
+ 
+GRULLO_LOGIN="grullo"
+GRULLO_NAME="Grullo Broms"
+ 
+BROLLO_LOGIN="brollo"
+BROLLO_NAME="Brollo Gons"
+ 
+DATA_DASHBOARD_JSON="./grafana/control-panel.json"
+ALERT_DASHBOARD_JSON="./grafana/falco.json"
 
-for f in "$DASHBOARD_DIR"/*.json; do
-  base=$(basename "$f" .json)
-  cm_name="grafana-dashboard-${base}"
+TEAM_NAME="TrentinoTrasporti"
 
-  kubectl create configmap "$cm_name" \
-    --from-file="$f" \
-    --namespace monitoring \
-    --dry-run=client -o yaml \
-  | kubectl label --local -f - grafana_dashboard=1 -o yaml \
-  | kubectl apply -f -
+AUTH="-u ${GRAFANA_ADMIN_USER}:${GRAFANA_ADMIN_PASS}"
+API="${GRAFANA_URL}/api"
 
-  kubectl annotate configmap "$cm_name" \
-    --namespace monitoring \
-    grafana_folder="$FOLDER" --overwrite
-done
+call() {
+  local method=$1
+  local path=$2
+  local body=${3:-}
+  if [ -n "$body" ]; then
+    curl -s -X "$method" $AUTH -H "Content-Type: application/json" \
+      -d "$body" "${API}${path}"
+  else
+    curl -s -X "$method" $AUTH "${API}${path}"
+  fi
+}
 
-echo ">>> Dashboards imported into folder '$FOLDER'"
+# The special uid "general" always refers to the root/General folder in Grafana's API
+call POST "/folders/general/permissions" '{"items": []}' > /dev/null
+echo ">>> General folder permissions: Admin only (Viewer/Editor removed)"
+
+GRULLO=$(call POST /admin/users "$(jq -n \
+  --arg name "$GRULLO_NAME" \
+  --arg login "$GRULLO_LOGIN" \
+  --arg password "$GRULLO_PASSWORD" \
+  '{name: $name, login: $login, password: $password, OrgId: 1}')")
+GRULLO_ID=$(echo "$GRULLO" | jq -r '.id')
+echo ">>> User created: ${GRULLO_LOGIN} (id=$GRULLO_ID)"
+ 
+# org-wide role: None — with Viewer/Editor, users get implicit read access to
+# every folder by default, which defeats folder-level restrictions. Setting
+# "None" means access comes ONLY from explicit folder/team permissions below.
+call PATCH "/org/users/${GRULLO_ID}" '{"role":"None"}' > /dev/null
+ 
+BROLLO=$(call POST /admin/users "$(jq -n \
+  --arg name "$BROLLO_NAME" \
+  --arg login "$BROLLO_LOGIN" \
+  --arg password "$BROLLO_PASSWORD" \
+  '{name: $name, login: $login, password: $password, OrgId: 1}')")
+BROLLO_ID=$(echo "$BROLLO" | jq -r '.id')
+echo ">>> User created: ${BROLLO_LOGIN} (id=$BROLLO_ID)"
+ 
+# org-wide role: None — same reasoning as above. brollo's real "admin" power
+# comes from being Team Admin (step 3) and folder Edit permissions, not from
+# an org-wide role.
+call PATCH "/org/users/${BROLLO_ID}" '{"role":"None"}' > /dev/null
+
+TEAM=$(call POST /teams "$(jq -n --arg name "$TEAM_NAME" '{name: $name}')")
+TEAM_ID=$(echo "$TEAM" | jq -r '.teamId')
+echo ">>> Team created: ${TEAM_NAME} (id=$TEAM_ID)"
+ 
+# Grafana automatically adds the API caller (admin) as a team Admin on creation — remove it,
+# the global admin should not appear as a team member
+ADMIN_ID=$(call GET "/users/lookup?loginOrEmail=${GRAFANA_ADMIN_USER}" | jq -r '.id')
+call DELETE "/teams/${TEAM_ID}/members/${ADMIN_ID}" > /dev/null
+echo ">>> Removed '${GRAFANA_ADMIN_USER}' from the team (was auto-added as owner)"
+ 
+# add grullo as a regular member
+call POST "/teams/${TEAM_ID}/members" "$(jq -n --argjson uid "$GRULLO_ID" '{userId: $uid}')" > /dev/null
+echo ">>> ${GRULLO_LOGIN} added to the team (member)"
+ 
+# add brollo as a member
+call POST "/teams/${TEAM_ID}/members" "$(jq -n --argjson uid "$BROLLO_ID" '{userId: $uid}')" > /dev/null
+ 
+# promote brollo to TEAM admin (not org-wide) — permission 4 = Admin within the team
+call PUT "/teams/${TEAM_ID}/members/${BROLLO_ID}" '{"permission":4}' > /dev/null
+echo ">>> ${BROLLO_LOGIN} added to the team as Team Admin"
+
+FOLDER_DATA=$(call POST /folders '{"title":"Data"}')
+FOLDER_DATA_UID=$(echo "$FOLDER_DATA" | jq -r '.uid')
+echo ">>> Folder created: Data (uid=$FOLDER_DATA_UID)"
+ 
+if [ -f "$DATA_DASHBOARD_JSON" ]; then
+  DASH_JSON=$(jq 'del(.id) | del(.uid)' "$DATA_DASHBOARD_JSON")
+  PAYLOAD=$(jq -n --argjson dashboard "$DASH_JSON" --arg folderUid "$FOLDER_DATA_UID" \
+    '{dashboard: $dashboard, folderUid: $folderUid, overwrite: true}')
+  call POST /dashboards/db "$PAYLOAD" > /dev/null
+  echo ">>> Dashboard imported into Data from $DATA_DASHBOARD_JSON"
+else
+  echo ">>> WARNING: $DATA_DASHBOARD_JSON not found, import skipped"
+fi
+ 
+# permissions: team = View, brollo.gons = Edit (only the team admin can modify)
+PERMS_DATA=$(jq -n --argjson teamId "$TEAM_ID" --argjson userId "$BROLLO_ID" '{
+  items: [
+    {teamId: $teamId, permission: 1},
+    {userId: $userId, permission: 2}
+  ]
+}')
+call POST "/folders/${FOLDER_DATA_UID}/permissions" "$PERMS_DATA" > /dev/null
+echo ">>> Data folder permissions: team=View, ${BROLLO_LOGIN}=Edit"
+
+FOLDER_ALERT=$(call POST /folders '{"title":"Alert"}')
+FOLDER_ALERT_UID=$(echo "$FOLDER_ALERT" | jq -r '.uid')
+echo ">>> Folder created: Alert (uid=$FOLDER_ALERT_UID)"
+ 
+if [ -f "$ALERT_DASHBOARD_JSON" ]; then
+  DASH_JSON=$(jq 'del(.id) | del(.uid)' "$ALERT_DASHBOARD_JSON")
+  PAYLOAD=$(jq -n --argjson dashboard "$DASH_JSON" --arg folderUid "$FOLDER_ALERT_UID" \
+    '{dashboard: $dashboard, folderUid: $folderUid, overwrite: true}')
+  call POST /dashboards/db "$PAYLOAD" > /dev/null
+  echo ">>> Dashboard imported into Alert from $ALERT_DASHBOARD_JSON"
+else
+  echo ">>> WARNING: $ALERT_DASHBOARD_JSON not found, import skipped"
+fi
+ 
+# permissions: ONLY brollo.gons (Edit) — the team has NO access
+PERMS_ALERT=$(jq -n --argjson userId "$BROLLO_ID" '{
+  items: [
+    {userId: $userId, permission: 2}
+  ]
+}')
+call POST "/folders/${FOLDER_ALERT_UID}/permissions" "$PERMS_ALERT" > /dev/null
+echo ">>> Alert folder permissions: only ${BROLLO_LOGIN}=Edit (team excluded)"
 
 echo "========================================"
 echo " STEP 6 — Basic auth per Ingress"
