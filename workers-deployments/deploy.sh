@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+kubectl label nodes worker-1 worker-2 role=worker --overwrite
+
 chmod +x deploy-mosquitto.sh
 chmod +x deploy-telegraf.sh
 

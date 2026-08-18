@@ -251,6 +251,7 @@ helm install falco falcosecurity/falco \
   --set falco.http_output.url=http://falco-falcosidekick:2801/ \
   --set falco.json_output=true \
   --set falco.json_include_output_property=true \
+  --set falcosidekick.nodeSelector.role=worker \
   --set falcosidekick.securityContext.runAsNonRoot=true \
   --set falcosidekick.securityContext.runAsUser=1000 \
   --set falcosidekick.securityContext.readOnlyRootFilesystem=true \
