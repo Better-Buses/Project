@@ -257,6 +257,7 @@ helm install falco falcosecurity/falco \
   --set falcosidekick.securityContext.readOnlyRootFilesystem=true \
   --set falcosidekick.securityContext.allowPrivilegeEscalation=false \
   --set falcosidekick.securityContext.capabilities.drop[0]=ALL \
+  --set falco.rule_matching=all \
   --set-file customRules."falco-rules\.yaml"=yamls/falco-rules.yaml
 
 echo ""
