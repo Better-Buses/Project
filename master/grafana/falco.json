@@ -4,18 +4,18 @@
   "metadata": {
     "name": "adjqd7p",
     "namespace": "default",
-    "uid": "e0a763c6-8258-4fad-ad59-ba765dc4132d",
-    "resourceVersion": "1786709406643018",
-    "generation": 6,
-    "creationTimestamp": "2026-08-14T12:06:30Z",
+    "uid": "f49603f6-170d-414b-b98f-e5a1a2ef7427",
+    "resourceVersion": "1787149075276015",
+    "generation": 3,
+    "creationTimestamp": "2026-08-17T11:07:29Z",
     "labels": {
-      "grafana.app/deprecatedInternalID": "3069186129752064"
+      "grafana.app/deprecatedInternalID": "4141498107039744"
     },
     "annotations": {
       "grafana.app/createdBy": "user:dfv5l3iga2o00f",
       "grafana.app/saved-from-ui": "Grafana v13.1.3 (45a27d64b6)",
       "grafana.app/updatedBy": "user:dfv5l3iga2o00f",
-      "grafana.app/updatedTimestamp": "2026-08-14T12:10:06Z"
+      "grafana.app/updatedTimestamp": "2026-08-19T14:17:55Z"
     }
   },
   "spec": {
@@ -151,7 +151,7 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "sum(rate(falcosecurity_falcosidekick_falco_events_total{rule=~\"Shell spawned in fog container|Unexpected outbound connection from fog|Read sensitive file in container\"}[$rate_interval]))",
+                        "expr": "sum(rate(falcosecurity_falcosidekick_falco_events_total{rule=~\"Shell spawned in fog container|Unexpected outbound connection from fog|Read sensitive file in container\"}[$rate_interval])) * 60",
                         "legendFormat": "__auto",
                         "range": true
                       }
@@ -205,7 +205,8 @@
                     ]
                   },
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
+                    "seriesBy": "last"
                   },
                   "custom": {
                     "axisBorderShow": false,
@@ -216,21 +217,24 @@
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
                     "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
+                    "fillOpacity": 25,
+                    "gradientMode": "opacity",
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
                       "viz": false
                     },
                     "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
+                    "lineInterpolation": "stepBefore",
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 2,
                     "pointSize": 5,
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -293,7 +297,9 @@
             "spec": {
               "options": {
                 "cellHeight": "sm",
-                "showHeader": true
+                "frameIndex": 1,
+                "showHeader": true,
+                "sortBy": []
               },
               "fieldConfig": {
                 "defaults": {
@@ -386,7 +392,7 @@
       "timezone": "browser",
       "from": "now-5m",
       "to": "now",
-      "autoRefresh": "5s",
+      "autoRefresh": "",
       "autoRefreshIntervals": [
         "5s",
         "10s",
@@ -402,7 +408,7 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Falco",
+    "title": "Falco alerts",
     "variables": [
       {
         "kind": "IntervalVariable",
@@ -410,12 +416,12 @@
           "name": "rate_interval",
           "query": "1m,5m,10m,30m,1h",
           "current": {
-            "text": "1h",
-            "value": "1h"
+            "text": "1m",
+            "value": "1m"
           },
           "options": [
             {
-              "selected": false,
+              "selected": true,
               "text": "1m",
               "value": "1m"
             },
@@ -435,7 +441,7 @@
               "value": "30m"
             },
             {
-              "selected": true,
+              "selected": false,
               "text": "1h",
               "value": "1h"
             }
