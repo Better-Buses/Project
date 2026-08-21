@@ -244,20 +244,7 @@ kubectl create namespace falco 2>/dev/null || true
  
 helm install falco falcosecurity/falco \
   --namespace falco \
-  --set driver.kind=modern_ebpf \
-  --set falcosidekick.enabled=true \
-  --set falcosidekick.config.prometheus.enabled=true \
-  --set falco.http_output.enabled=true \
-  --set falco.http_output.url=http://falco-falcosidekick:2801/ \
-  --set falco.json_output=true \
-  --set falco.json_include_output_property=true \
-  --set falcosidekick.nodeSelector.role=worker \
-  --set falcosidekick.securityContext.runAsNonRoot=true \
-  --set falcosidekick.securityContext.runAsUser=1000 \
-  --set falcosidekick.securityContext.readOnlyRootFilesystem=true \
-  --set falcosidekick.securityContext.allowPrivilegeEscalation=false \
-  --set falcosidekick.securityContext.capabilities.drop[0]=ALL \
-  --set falco.rule_matching=all \
+  -f yamls/falco-values.yaml \
   --set-file customRules."falco-rules\.yaml"=yamls/falco-rules.yaml
 
 echo ""

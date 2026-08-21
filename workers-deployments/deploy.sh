@@ -18,8 +18,8 @@ for (( ZONE=1; ZONE <= $ZONES; ++ZONE )) do
   bash deploy-mosquitto.sh $ZONE $NAMESPACE
   bash deploy-telegraf.sh $ZONE $NAMESPACE
 
-  kubectl apply -f yamls/falco-monitor.yaml
-
   export ZONE
   envsubst < yamls/network-policies.yaml | kubectl apply -f -
 done
+
+kubectl apply -f yamls/falco-monitor.yaml

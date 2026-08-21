@@ -1,0 +1,41 @@
+# falco-values.yaml
+
+driver:
+  kind: modern_ebpf
+
+falco:
+  json_output: true
+  json_include_output_property: true
+  rule_matching: all
+  http_output:
+    enabled: true
+    url: "http://falco-falcosidekick:2801/"
+
+falcosidekick:
+  enabled: true
+  replicaCount: 1 # <-- Impostato a 1 replica
+  
+  # Posizionamento sul master (Control Plane)
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    # Mantenuto per compatibilità con distribuzioni K8s meno recenti
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+
+  config:
+    prometheus:
+      enabled: true
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
