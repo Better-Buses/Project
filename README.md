@@ -16,6 +16,20 @@ A fog infrastructure in which GPS sensors are attached to buses, and other track
 
 - [Oracle VirtualBox](https://www.virtualbox.org/) (7.2.10 or above)
 
+### Physical machine specs (reference)
+
+These are the main specs of the machine used to host the entire project, written just for reference.
+
+- **CPU** : AMD Ryzen 5 5500 6 cores
+
+- **RAM** : 32 GB DDR4
+
+- **Motherboard** : MSI B550M PRO-VDH
+
+  - **BIOS** :	American Megatrends International, LLC. 2.K0, 11/03/2024
+
+- **OS**: Windows 11 Pro
+
 ### OVA specs
 
 - **OS** : Ubuntu server 24.04 LTS
@@ -23,6 +37,8 @@ A fog infrastructure in which GPS sensors are attached to buses, and other track
 - **CPU** : 4 cores
 
   - Nested VT-x/AMD-V enabled
+
+  - Nasted paging enabled
 
 - **RAM** : 20 GB
 
@@ -44,7 +60,7 @@ The repository is structured in branches, each one that is used only from a spec
 
 The following 3 namespaces are defined, with the relative deployments.
 
-- **monitoring** : Grafana and Prometheus
+- **monitoring** : Grafana and Prometheus stacks
 
 - **zone-Z** : mosquitto and telegraf deployed in `Worker-Z`
 
