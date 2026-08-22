@@ -1,6 +1,4 @@
 #!/bin/bash
-# Convert to base64 and place in the template.one
-#   base64 -w0 start-script.sh
 
 exec > /var/log/my-context.log 2>&1
 set -x
