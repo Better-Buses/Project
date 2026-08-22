@@ -47,7 +47,7 @@ spec:
         - protocol: TCP
           port: 9273
 ---
-# Mosquitto: even if it accepts inbounds data from the sensor an attacker can compromise it to send data outwards
+# Block egress for mosquitto - even if it accepts inbounds data from the sensor an attacker can compromise it to send data outwards
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

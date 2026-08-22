@@ -158,20 +158,15 @@ TEAM=$(call POST /teams "$(jq -n --arg name "$TEAM_NAME" '{name: $name}')")
 TEAM_ID=$(echo "$TEAM" | jq -r '.teamId')
 echo ">>> Team created: ${TEAM_NAME} (id=$TEAM_ID)"
  
-# Grafana automatically adds the API caller (admin) as a team Admin on creation — remove it,
-# the global admin should not appear as a team member
 ADMIN_ID=$(call GET "/users/lookup?loginOrEmail=${GRAFANA_ADMIN_USER}" | jq -r '.id')
 call DELETE "/teams/${TEAM_ID}/members/${ADMIN_ID}" > /dev/null
 echo ">>> Removed '${GRAFANA_ADMIN_USER}' from the team (was auto-added as owner)"
  
-# add grullo as a regular member
 call POST "/teams/${TEAM_ID}/members" "$(jq -n --argjson uid "$GRULLO_ID" '{userId: $uid}')" > /dev/null
 echo ">>> ${GRULLO_LOGIN} added to the team (member)"
  
-# add brollo as a member
 call POST "/teams/${TEAM_ID}/members" "$(jq -n --argjson uid "$BROLLO_ID" '{userId: $uid}')" > /dev/null
- 
-# promote brollo to TEAM admin (not org-wide) — permission 4 = Admin within the team
+
 call PUT "/teams/${TEAM_ID}/members/${BROLLO_ID}" '{"permission":4}' > /dev/null
 echo ">>> ${BROLLO_LOGIN} added to the team as Team Admin"
 

@@ -1,5 +1,3 @@
-# falco-values.yaml
-
 driver:
   kind: modern_ebpf
 
@@ -13,16 +11,14 @@ falco:
 
 falcosidekick:
   enabled: true
-  replicaCount: 1 # <-- Impostato a 1 replica
-  
-  # Posizionamento sul master (Control Plane)
+  replicaCount: 1
+
   nodeSelector:
     node-role.kubernetes.io/control-plane: "true"
   tolerations:
     - key: node-role.kubernetes.io/control-plane
       operator: Exists
       effect: NoSchedule
-    # Mantenuto per compatibilità con distribuzioni K8s meno recenti
     - key: node-role.kubernetes.io/master
       operator: Exists
       effect: NoSchedule
