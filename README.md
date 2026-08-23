@@ -22,7 +22,7 @@ These are the main specs of the machine used to host the entire project, written
 
 - **CPU** : AMD Ryzen 5 5500 6 cores
 
-- **RAM** : 32 GB DDR4
+- **RAM** : 32 GB
 
 - **Motherboard** : MSI B550M PRO-VDH
 
@@ -107,9 +107,13 @@ ssh root@172.16.100.X
 
   - URL : `<UBUNTU_SERVER_IP>:30000`
 
-  - User : `admin`
+  - Users - Password :
 
-  - Password : `foggy`
+    - `admin` - `foggy` (admin privileges, sees both `Control Panel` and `Falco Alerts` dashboards)
+
+    - `grullo` - `trento` (team member, sees only `Control Panel` dashboard)
+
+    - `brollo` - `trento` (team leader with admin privileges)
 
 - **Prometheus**
 
@@ -121,8 +125,7 @@ ssh root@172.16.100.X
 
 ### Simulation
 
-<!-- TODO: enter as a specific user -->
-To start the simulation, first access Grafana and open the `control-panel` dashboard, then SSH into Sensors VM and run this command.
+To start the simulation, first access Grafana and open the `Control Panel` dashboard, then SSH into Sensors VM and run this command.
 
 ```sh
 python3 sensors.py
