@@ -113,8 +113,46 @@ bash sensors/deploy.sh
 bash worker/deploy.sh $ZONES
 
 # Expose Grafana and Prometheus (inside master node) to host's ports, letting them accessible from the physical machine
-sudo iptables -t nat -A PREROUTING -p tcp --dport 30000 -j DNAT --to-destination 172.16.100.2:30000
-sudo iptables -t nat -A PREROUTING -p tcp --dport 30001 -j DNAT --to-destination 172.16.100.2:30001
-sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+BRIDGE_IF="minionebr"
+UPLINK_IF="eth0"
+VM_SUBNET="172.16.100.0/24"
+MASTER_VM_IP="172.16.100.2"
+GRAFANA_PORT=30000
+PROMETHEUS_PORT=30001
 
-sudo iptables-save | sudo tee /etc/iptables/rules.v4
+# Enable IP forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
+echo "net.ipv4.ip_forward=1" | sudo tee /etc/sysctl.d/99-ip-forward.conf > /dev/null
+
+# Allow forwarded traffic between VM bridge and uplink
+sudo iptables -A FORWARD -i "$BRIDGE_IF" -o "$UPLINK_IF" -j ACCEPT
+sudo iptables -A FORWARD -i "$UPLINK_IF" -o "$BRIDGE_IF" -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Masquerade outbound VM subnet traffic
+sudo iptables -t nat -A POSTROUTING -s "$VM_SUBNET" ! -d "$VM_SUBNET" -j MASQUERADE
+
+# Expose Grafana/Prometheus NodePorts on the physical host
+sudo iptables -t nat -A PREROUTING -p tcp --dport "$GRAFANA_PORT" -j DNAT --to-destination "${MASTER_VM_IP}:${GRAFANA_PORT}"
+sudo iptables -t nat -A PREROUTING -p tcp --dport "$PROMETHEUS_PORT" -j DNAT --to-destination "${MASTER_VM_IP}:${PROMETHEUS_PORT}"
+
+# Persist only these static rules
+sudo tee /etc/iptables/rules.v4 > /dev/null <<EOF
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A PREROUTING -p tcp -m tcp --dport ${GRAFANA_PORT} -j DNAT --to-destination ${MASTER_VM_IP}:${GRAFANA_PORT}
+-A PREROUTING -p tcp -m tcp --dport ${PROMETHEUS_PORT} -j DNAT --to-destination ${MASTER_VM_IP}:${PROMETHEUS_PORT}
+-A POSTROUTING -s ${VM_SUBNET} ! -d ${VM_SUBNET} -j MASQUERADE
+COMMIT
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A FORWARD -i ${BRIDGE_IF} -o ${UPLINK_IF} -j ACCEPT
+-A FORWARD -i ${UPLINK_IF} -o ${BRIDGE_IF} -m state --state RELATED,ESTABLISHED -j ACCEPT
+COMMIT
+EOF
+
+sudo systemctl enable netfilter-persistent
