@@ -54,7 +54,7 @@ The repository is structured in branches, each one that is used only from a spec
 
 - [Worker-node](https://github.com/Better-Buses/Project/tree/worker-node) : automatically cloned in the Workers VMs via `start-script.sh` in the context. It configures k3s in client mode, given the master node token (assigned manually after master node is configured).
 
-- [Sensors](https://github.com/Better-Buses/Project/tree/sensors) : automatically cloned in the Sensors VMs via `start-script.sh` in the context. It provides the scripts to simulate 2 areas, 1 bus and 5 bus stops each. The buses linearly go from a stop to another, and once they arrive to a bus stop, a random delay is generated.
+- [Sensors](https://github.com/Better-Buses/Project/tree/sensors) : automatically cloned in the Sensors VMs via `start-script.sh` in the context. It provides the scripts to simulate 2 areas, 1 bus and 10 bus stops each. The buses linearly go from a stop to another, and once they arrive to a bus stop, a random delay is generated.
 
 ### Pods and namespaces
 
