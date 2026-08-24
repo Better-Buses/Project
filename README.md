@@ -133,16 +133,22 @@ python3 sensors.py
 
 ### Falco
 
-To verify Falco's threat detection capabilities, we can simulate three common attack vectors within the cluster. Once triggered, the resulting security alerts will be visible in the `falco` dashboard.
+To verify Falco's threat detection capabilities, we can simulate three common attack vectors within the cluster. Once triggered, the resulting security alerts will be visible in the `Falco Alerts` dashboard.
+
 - **Open a remote shell**
-```bash
+
+```sh
 kubectl exec -it <mosquitto-pod> -n zone-<Z> -- sh
 ```
+
 - **Read sensitive file in container**
-```bash
+
+```sh
 kubectl exec -it <mosquitto-pod> -n zone-<Z> -- cat /etc/passwd
 ```
+
 - **Unexpected outbound connection**
-```bash
+
+```sh
 kubectl exec -it <mosquitto-pod> -n zone-<Z> -- wget -T 5 http://google.com
 ```
