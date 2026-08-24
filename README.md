@@ -3,7 +3,7 @@
 A fog infrastructure in which GPS sensors are attached to buses, and other trackers are located in bus stops. When a bus arrives at a bus stop, the current time is sent to the workers (at the fog layer), which computes the metrics, such as delay. In addition, the position of the buses is sent too in order to keep track of traffic jams, but these data are not processed. Finally, Prometheus and Grafana are adopted to pull data from the workers and display them onto a dashboard. For scalability purpose, workers and sensors are divided into areas, useful in large metropolitan areas: each sensor is assigned to a zone `Z` and it sends data only to worker `worker-Z`. The targets of the application are public transport agencies.
 
 <div align="center">
-  <img src="resources/arch.svg">
+  <img src="resources/arch.png" width=50%>
 </div>
 
 ## Requirements
@@ -43,6 +43,62 @@ These are the main specs of the machine used to host the entire project, written
 - **RAM** : 16 GB
 
 - **Disk** : 80 GB
+
+- **Bridged Adapter**
+
+> [!NOTE]\
+> The `Better Buses.ova` can be downloaded from [here](https://drive.google.com/file/d/1kisA7vgpoh_FegqMjBGrfsRCkiWCsQEK/view?usp=sharing) (as long as UniTn does not retrieve our university accounts :). In alternative, download the [Ubuntu Server 24.04 ISO](https://releases.ubuntu.com/24.04/ubuntu-24.04.4-live-server-amd64.iso) and follow the installation steps.
+
+## Installation
+
+1. Enable Hardware Virtualization from BIOS settings, then create the Ubuntu Server host VM following the previous specs.
+
+2. Download the repo inside the host, move to the homonym branch and run
+
+    ```sh
+    bash setup.sh 2
+    ```
+
+3. Once the script finishes, wait at least 5 minutes and enter Master VM with
+
+    ```sh
+    ssh root@172.16.100.2
+    ```
+
+    If the hostname is renamed in `master`, the VM is setup, otherwise wait the Master VM reboot. If needed, check the log of the `start-script.sh` script in `/var/log/my-context.log`, and the `setup.sh` script in `/var/log/provision.log`.
+
+4. Take the master token with
+
+    ```sh
+    sudo cat /var/lib/rancher/k3s/server/node-token
+    ```
+
+    Enter Worker VMs and run
+
+    ```sh
+    bash setup.sh <worker-ID> <master-token>
+    ```
+
+5. Once the VMs reboot, check they joined the cluster running in the master
+
+    ```sh
+    kctl get nodes
+    ```
+
+    and deploy the services with
+
+    ```sh
+    cd workers-deployments
+    bash deploy.sh
+    ```
+
+    Check all pods are running and in which node with
+
+    ```sh
+    kctl get pods -A -o wide
+    ```
+
+    The 2 `heml-install-traefik-[...]` pods might be down, marked as `Completed` (no problem).
 
 ## Architecture
 
