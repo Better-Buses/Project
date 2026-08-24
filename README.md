@@ -40,7 +40,7 @@ These are the main specs of the machine used to host the entire project, written
 
   - Nasted paging enabled
 
-- **RAM** : 20 GB
+- **RAM** : 16 GB
 
 - **Disk** : 80 GB
 
