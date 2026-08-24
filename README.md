@@ -107,9 +107,23 @@ ssh root@172.16.100.X
 
   - URL : `<UBUNTU_SERVER_IP>:30000`
 
-  - User : `admin`
+  - **ADMIN**
 
-  - Password : `foggy`
+    - User : `admin`
+
+    - Password : `foggy`
+
+  - **Team member**
+
+    - User : `brollo`
+
+    - Password : `trento`
+
+  - **Team admin**
+
+    - User : `grullo`
+
+    - Password : `trento`
 
 - **Prometheus**
 
@@ -121,9 +135,24 @@ ssh root@172.16.100.X
 
 ### Simulation
 
-<!-- TODO: enter as a specific user -->
-To start the simulation, first access Grafana and open the `control-panel` dashboard, then SSH into Sensors VM and run this command.
+To start the simulation, first access Grafana with one of the users and open the `control-panel` dashboard, then SSH into Sensors VM and run this command.
 
 ```sh
 python3 sensors.py
+```
+
+### Falco
+
+To verify Falco's threat detection capabilities, we can simulate three common attack vectors within the cluster. Once triggered, the resulting security alerts will be visible in the `falco` dashboard.
+- **Open a remote shell**
+```bash
+kubectl exec -it <mosquitto-pod> -n zone-<Z> -- sh
+```
+- **Read sensitive file in container**
+```bash
+kubectl exec -it <mosquitto-pod> -n zone-<Z> -- cat /etc/passwd
+```
+- **Unexpected outbound connection**
+```bash
+kubectl exec -it <mosquitto-pod> -n zone-<Z> -- wget -T 5 http://google.com
 ```
