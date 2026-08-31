@@ -3,6 +3,11 @@
 set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
+if [ -f /root/.provisioning-complete ]; then
+  echo "Provisioning already completed — skipping."
+  exit 0
+fi
+
 echo "Provisioning in progress — do not interrupt." > /etc/nologin
 
 echo "========================================"
