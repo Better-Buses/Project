@@ -16,6 +16,9 @@ A fog infrastructure in which GPS sensors are attached to buses, and other track
 
 - [Oracle VirtualBox](https://www.virtualbox.org/) (7.2.10 or above)
 
+> [!NOTE]\
+> On Windows you have to disable Hyper-V and turn off `Memory integrity` under `Windows Security > Device Security > Memory Integrity > Core isolation` (at least that was necessary in our case).
+
 ### Physical machine specs (reference)
 
 These are the main specs of the machine used to host the entire project, written just for reference.
