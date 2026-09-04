@@ -392,7 +392,7 @@
       "timezone": "browser",
       "from": "now-5m",
       "to": "now",
-      "autoRefresh": "",
+      "autoRefresh": "5s",
       "autoRefreshIntervals": [
         "5s",
         "10s",
@@ -408,7 +408,7 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Falco alerts",
+    "title": "Falco Alerts",
     "variables": [
       {
         "kind": "IntervalVariable",
