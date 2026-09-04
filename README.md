@@ -47,7 +47,7 @@ These are the main specs of the machine used to host the entire project, written
 - **Bridged Adapter**
 
 > [!NOTE]\
-> The `Better Buses.ova` can be downloaded from [here](https://drive.google.com/file/d/1kisA7vgpoh_FegqMjBGrfsRCkiWCsQEK/view?usp=sharing) (as long as UniTn does not retrieve our university accounts :). In alternative, download the [Ubuntu Server 24.04 ISO](https://releases.ubuntu.com/24.04/ubuntu-24.04.4-live-server-amd64.iso) and follow the installation steps.
+> The `Better Buses.ova` can be downloaded from [here](https://drive.google.com/file/d/1RhANQL3_01hpBGrCv7GuUNFrPwwDUrsn/view?usp=sharing) (as long as UniTn does not retrieve our university accounts :). In alternative, download the [Ubuntu Server 24.04 ISO](https://releases.ubuntu.com/24.04/ubuntu-24.04.4-live-server-amd64.iso) and follow the installation steps.
 
 ## Installation
 
